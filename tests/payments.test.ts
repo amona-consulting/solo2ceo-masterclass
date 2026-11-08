@@ -11,7 +11,7 @@ test('verified enrollment rejects mismatches, deduplicates, expires and isolates
  const a=await register('Paid Student','paid@example.test','Long test password!'),b=await register('Other Student','other@example.test','Long test password!');
  await assert.rejects(async()=>(await requireEnrollment(a.id)));const ref=(await order(a.id));
  const tx={id:123,tx_ref:ref,amount:30000,currency:'NGN',status:'successful',customer:{email:a.email}};
- for(const bad of [{amount:1},{currency:'USD'},{tx_ref:'forged'},{customer:{email:b.email}},{id:0}])await assert.rejects(async()=>(await applyVerifiedPayment(ref,{...tx,...bad})));
+ for(const bad of [{amount:1},{currency:'USD'},{tx_ref:'forged'},{id:0}])await assert.rejects(async()=>(await applyVerifiedPayment(ref,{...tx,...bad})));
  assert.equal((await enrollment(a.id)),undefined);
  assert.equal((await applyVerifiedPayment(ref,{...tx,status:'failed'})),false);
  assert.equal((await applyVerifiedPayment(ref,tx)),true);const original=(await enrollment(a.id))!;
@@ -59,4 +59,14 @@ test('real payment adapter against local HTTP simulation', {skip:!process.env.PA
  assert.equal((await handleWebhook(event())).status,200);const access=(await enrollment(user.id));assert.ok(access);
  assert.equal((await handleWebhook(event())).status,200);assert.deepEqual((await enrollment(user.id)),access);
  await assert.rejects(startCheckout(user),/already active/);
+});
+
+test('payer email does not change the account that owns an order',async()=>{
+ const owner=await register('Order Owner','order-owner@example.test','Long test password!');
+ const payer=await register('Other Payer','other-payer@example.test','Long test password!');
+ const reference=await order(owner.id);
+ await assert.rejects(verifyPayment(reference,payer.id),/not found/);
+ assert.equal(await applyVerifiedPayment(reference,{id:19001,tx_ref:reference,amount:30000,currency:'NGN',status:'successful',customer:{email:payer.email}}),true);
+ assert.ok(await enrollment(owner.id));
+ assert.equal(await enrollment(payer.id),undefined);
 });

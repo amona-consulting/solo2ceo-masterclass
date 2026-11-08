@@ -82,7 +82,7 @@ export async function applyVerifiedPayment(reference:string,data:unknown,now=Dat
  const payment=(await findPayment(reference));if(!payment)throw new Error('Payment not found.');
  const tx=data as {id?:number;tx_ref?:string;amount?:number|string;currency?:string;status?:string;customer?:{email?:string}};
  const owner=(await db().prepare('SELECT email FROM users WHERE id=?').get(payment.user_id)) as {email:string};
- if(!tx||tx.tx_ref!==reference||tx.currency!==payment.currency||Number(tx.amount)!==payment.amount||typeof tx.id!=='number'||!Number.isSafeInteger(tx.id)||tx.id<=0||tx.customer?.email?.toLowerCase()!==owner.email)throw new Error('Payment details do not match this enrollment. Please contact Amona.');
+ if(!tx||tx.tx_ref!==reference||tx.currency!==payment.currency||Number(tx.amount)!==payment.amount||typeof tx.id!=='number'||!Number.isSafeInteger(tx.id)||tx.id<=0)throw new Error('Payment details do not match this enrollment. Please contact Amona.');
  if(tx.status!=='successful')return false;
  const database=db();return transaction(async()=>{
   await database.prepare('SELECT id FROM users WHERE id=? FOR UPDATE').get(payment.user_id);
