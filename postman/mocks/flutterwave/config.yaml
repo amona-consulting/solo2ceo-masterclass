@@ -1,0 +1,16 @@
+version: 1
+id: 01da204e-1a2c-4a9f-b9c9-b4069402fff8
+name: flutterwave
+slug: flutterwave
+protocol: http
+interceptRequests: true
+origin: api.flutterwave.com
+port: 4500
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true
+generatedFrom:
+  type: spec
+  mode: static
+  path: ../../flutterwave.openapi.yaml

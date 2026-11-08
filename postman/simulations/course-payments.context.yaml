@@ -1,0 +1,23 @@
+purpose:
+  stands_in_for: Flutterwave v3 hosted checkout and verify-by-reference
+  unblocks: Local testing of payment adapter and enrollment writes without real charges
+assumptions:
+  - id: checkout-and-verify-shape
+    status: supported
+    claim: Flutterwave Standard returns a hosted link and exposes transaction verification by merchant reference.
+    reason: Official documentation describes these operations; local mock follows the documented subset.
+    verification: On 2026-11-06 the real adapter passed local HTTP creation, pending, amount mismatch, outage and successful verification cases. This establishes caller behavior only.
+    source: https://developer.flutterwave.com/docs/flutterwave-standard-1 ; https://developer.flutterwave.com/reference/verify-transaction-with-tx_ref ; tests/payments.test.ts
+    updated_at: '2026-11-06'
+  - id: real-checkout-availability
+    status: unknown
+    claim: This account can open a real Flutterwave test checkout from the deployment environment.
+    reason: Real verification accepted test credentials but checkout POST returned a Cloudflare HTML 403 on this machine.
+    verification: No real checkout or actual provider webhook was completed. Repeat tests/flutterwave-smoke.ts from an allowed environment and then complete a sandbox payment before release.
+    source: tests/flutterwave-smoke.ts; PAYMENTS.md
+    updated_at: '2026-11-06'
+fingerprints:
+  - id: initial-payment-integration
+    date: '2026-11-06'
+    commit: null
+    cli: '1.86.0'

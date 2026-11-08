@@ -1,0 +1,333 @@
+[
+  [
+    {
+      "question": "What does the transition from Solo to CEO practically mean in how decisions are made in a business?",
+      "options": [
+        "The founder makes every decision personally to maintain control.",
+        "Decisions are guided by structure, data, systems, and delegated responsibilities.",
+        "The business grows only when the founder works longer hours."
+      ],
+      "answer": 1
+    },
+    {
+      "question": "Identify two behaviours that signal a business is still founder-dependent rather than CEO-led.",
+      "options": [
+        "The founder approves every small task and the team cannot act without permission.",
+        "The team understands their roles and reports performance regularly.",
+        "The business has clear workflows and decision-making authority."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Why is structure more important than effort when scaling a business?",
+      "options": [
+        "Because structure allows the business to grow consistently without depending only on the founder’s energy.",
+        "Because effort is no longer needed once a business starts growing.",
+        "Because structure removes the need for leadership completely."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What is one recurring problem in a business that structure and process can solve?",
+      "options": [
+        "Lack of clarity around roles, processes, numbers, and accountability.",
+        "Having too many customers and no need for systems.",
+        "Wanting the founder to remain involved in every daily task."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Describe an ideal business 5 years from now in terms of size, structure, and CEO’s personal involvement.",
+      "options": [
+        "A business that has grown, has clear structure, a capable team, and does not depend on me for every task.",
+        "A business where I am still the only person who understands how everything works.",
+        "A business that is bigger but still operates without systems or accountability."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How does having a clear purpose influence the type of opportunities one should accept or reject?",
+      "options": [
+        "It helps CEOs accept opportunities that align with their vision and reject distractions.",
+        "It means CEOs should accept every opportunity that brings money.",
+        "It stops the business from trying anything new."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What personal values or life goals must a business support for it to be sustainable?",
+      "options": [
+        "Values such as freedom, family, impact, financial stability, faith, health, or legacy.",
+        "Only profit, even if the founder is burnt out.",
+        "Whatever competitors are doing at the moment."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What risks arise when a business grows without a clearly visualised purpose?",
+      "options": [
+        "The business may become stressful, reactive, misaligned, and difficult to sustain.",
+        "The business will automatically become more profitable.",
+        "The founder will no longer need to make strategic decisions."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Which of these is a clear mission statement that explains why a business exists beyond making money.",
+      "options": [
+        "“Our mission is to provide clear value to our customers while building a sustainable and impactful business.”",
+        "“Our mission is to sell as much as possible by any means.”",
+        "“Our mission is to copy what other businesses are doing.”"
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How do values influence daily decision-making in hiring, customer service, or partnerships?",
+      "options": [
+        "Values guide who CEOs hire, how CEOs treat customers, and what partnerships CEOs accept.",
+        "Values are only useful for branding and do not affect daily operations.",
+        "Values should only be discussed when there is a crisis."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Identify one value a business may claim to have but does not consistently demonstrate.",
+      "options": [
+        "A business may claim excellence but still deliver late, communicate poorly, or ignore quality standards.",
+        "A value only matters when customers complain publicly.",
+        "If a value is written down, the business is already demonstrating it."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How can clearly defined values reduce founder stress and decision fatigue?",
+      "options": [
+        "They create a decision-making filter, so the founder does not have to judge every issue from scratch.",
+        "They allow the founder to avoid difficult decisions completely.",
+        "They make business decisions emotional rather than practical."
+      ],
+      "answer": 0
+    }
+  ],
+  [
+    {
+      "question": "Using the Business Model Canvas, explain how business target market, value proposition, channels, and revenue model connect to one another.",
+      "options": [
+        "The target market defines who CEOs serve, the value proposition explains why they buy, the channels show how CEOs reach them, and the revenue model explains how money is made.",
+        "These elements are separate and do not need to connect.",
+        "The only important part of the canvas is revenue."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Identify one area of a current Business Model Canvas that is weak and explain the strategic risk it creates.",
+      "options": [
+        "A weak value proposition may make it difficult to attract the right customers and justify pricing.",
+        "A weak business model canvas has no effect if sales are currently happening.",
+        "The weakest area should be ignored until the business stops making money."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How do business key resources, activities, and partners enable CEOs to deliver value consistently?",
+      "options": [
+        "They provide the people, tools, actions, and support needed to serve customers reliably.",
+        "They are only useful for large companies, not small businesses.",
+        "They are less important than marketing and should be handled casually."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Which of these changes to a Business Model Canvas would have the greatest positive impact on scalability, and why?",
+      "options": [
+        "Strengthening delivery systems or channels so the business can serve more customers without overloading the founder.",
+        "Increasing prices without improving value or delivery.",
+        "Adding more products without understanding customer needs."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Identify one internal strength and one external opportunity that, if combined, could accelerate business growth.",
+      "options": [
+        "A strong customer reputation combined with rising market demand could help the business grow faster.",
+        "A weak team combined with stronger competitors will automatically create growth.",
+        "Low cash flow and poor systems are growth opportunities by themselves."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Describe one weakness and one threat that could seriously limit a business if left unaddressed.",
+      "options": [
+        "Weak financial records combined with rising costs could reduce profitability and decision-making quality.",
+        "Having clear processes and loyal customers would seriously limit the business.",
+        "A weak team and stable demand are threats to business growth."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How does PESTLE analysis help CEOs anticipate changes that may not be visible through SWOT alone?",
+      "options": [
+        "It helps the business assess external political, economic, social, technological, legal, and environmental factors.",
+        "It only focuses on the founder’s personal strengths and weaknesses.",
+        "It replaces the need to understand customers."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Based on SWOT and PESTLE analysis, what one strategic decision should a business make for growth in the next 6 months?",
+      "options": [
+        "Prioritise the decision that uses internal strengths, reduces major weaknesses, and responds to external opportunities or risks.",
+        "Choose any decision that feels right without evidence.",
+        "Avoid making decisions until every risk disappears."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Define one strategic goal for a business and explain how it aligns with long-term vision.",
+      "options": [
+        "“Increase monthly recurring revenue by 30% in 12 months to support predictable growth and reduce founder pressure.”",
+        "“Work harder every day and hope the business improves.”",
+        "“Post more content without linking it to sales, service delivery, or growth.”"
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Identify three KPIs that directly measure progress toward this goal and explain why each is critical.",
+      "options": [
+        "Monthly revenue, conversion rate, and customer retention",
+        "Number of ideas discussed, number of meetings attended, and how busy the founder feels.",
+        "Social media likes, number of leads, conversions rate"
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How should these KPIs be tracked, reviewed, and owned to ensure accountability?",
+      "options": [
+        "They should be recorded regularly, reviewed in weekly or monthly meetings, and assigned to specific owners.",
+        "They should be checked at the end of the year.",
+        "They can be discussed informally without documentation or ownership."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What actions should be taken if KPI performance consistently falls below target?",
+      "options": [
+        "Review the root cause, adjust actions, support the responsible owner, and make strategic corrections.",
+        "Ignore the data and make no changes.",
+        "Blame the team without checking whether the target, process, or support is realistic."
+      ],
+      "answer": 0
+    }
+  ],
+  [
+    {
+      "question": "Why is an organogram essential even in small businesses?",
+      "options": [
+        "It clarifies roles, reporting lines, responsibilities, and accountability.",
+        "It is only useful when a business has more than 100 employees.",
+        "It is mainly for decoration in company documents."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What risks arise when roles are unclear or overlapping?",
+      "options": [
+        "Tasks may be duplicated, ignored, delayed, or constantly pushed back to the founder.",
+        "The team automatically becomes more productive.",
+        "Customers will not notice any operational confusion."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Identify one role currently performed by CEOs that should be delegated.",
+      "options": [
+        "A repeatable operational task such as customer follow-up, invoicing, scheduling, reporting, or stock tracking.",
+        "Strategic decision that affects the future of the business.",
+        "Nothing, because the founder should be involved in every aspect of the business."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How does defining elements of work improve efficiency?",
+      "options": [
+        "It breaks work into clear tasks, responsibilities, timelines, inputs, and outputs.",
+        "It makes deliverables slower because people now know what to do.",
+        "It removes the need for performance tracking."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What forms of downtime exist in business operations?",
+      "options": [
+        "Waiting for approvals, delayed materials, unclear instructions, idle staff, system issues, or repeated corrections.",
+        "Only when the office is physically closed.",
+        "Downtime does not affect service businesses."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How does downtime impact profitability and morale?",
+      "options": [
+        "It wastes time and money, reduces output, frustrates staff, and affects customer experience.",
+        "It improves profitability because people are less busy.",
+        "It has no impact as long as the founder is working hard."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Identify one recurring source of wastage in business processes.",
+      "options": [
+        "Repeated errors, poor handovers, excess stock, rework, unclear approvals, or duplicated tasks.",
+        "Having documented processes and clear accountability.",
+        "Training staff to follow a standard way of working."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What system can be introduced to reduce operational waste?",
+      "options": [
+        "A simple process tracker, approval workflow, inventory log, checklist, or performance dashboard.",
+        "More verbal instructions with no documentation.",
+        "Asking the founder to personally supervise every task forever."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "Why do employees often resist change?",
+      "options": [
+        "They may fear uncertainty, loss of control, extra workload, or unclear expectations.",
+        "Employees always resist change because they are lazy.",
+        "Resistance only happens when a company is failing."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What role should leadership play during organisational change?",
+      "options": [
+        "Leadership should explain the reason for change, model the behaviour, support the team, and hold people accountable.",
+        "Leadership should announce change once and leave the team to figure it out.",
+        "Leadership should avoid communication so people do not ask questions."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "How can communication reduce resistance to change?",
+      "options": [
+        "It gives clarity, reduces fear, explains benefits, and helps people understand their role in the change.",
+        "It is unnecessary because employees should simply obey instructions.",
+        "It makes change harder because people know too much."
+      ],
+      "answer": 0
+    },
+    {
+      "question": "What steps can ensure changes are sustained over time?",
+      "options": [
+        "Document the change, train the team, assign owners, review progress, and reinforce accountability.",
+        "Make the change once and never review it again.",
+        "Depend only on the founder to remind everyone what to do."
+      ],
+      "answer": 0
+    }
+  ]
+]
+

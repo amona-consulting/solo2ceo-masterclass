@@ -1,0 +1,9 @@
+'use client';
+import { useActionState, useState } from 'react';
+import AmonaLogo from '../amona-logo';
+import { signIn } from '../actions';
+export default function AccountForm(){
+ const [signup,setSignup]=useState(false),[state,action,pending]=useActionState(signIn,{error:''});
+ return <main className="account-page app"><div className="account-intro"><div className="account-brand"><AmonaLogo/></div><p className="eyebrow">SOLO2CEO MASTERCLASS</p><h1>Build with clarity.<br/>Lead with confidence.</h1><p>Your lessons, notes and progress.<br/>Together in your personal learning space.</p></div><section className="account-panel"><h2>{signup?'Start your learning journey':'Welcome back'}</h2><p>{signup?'Create your account, then enroll for ₦30,000 for three months of course access.':'Sign in to continue where you left off.'}</p><form action={action}><input type="hidden" name="mode" value={signup?'signup':'login'}/>{signup&&<label>Your name<input name="name" autoComplete="name" minLength={2} maxLength={100} required/></label>}<label>Email address<input name="email" type="email" autoComplete="email" maxLength={254} required/></label><label>Password<input name="password" type="password" autoComplete={signup?'new-password':'current-password'} minLength={signup?12:undefined} maxLength={128} required/></label>{signup&&<small>Use at least 12 characters.</small>}{state.error&&<p className="account-error" role="alert">{state.error}</p>}<button className="button green" disabled={pending}>{pending?'Please wait…':signup?'Create account':'Sign in'}</button></form><button className="text-button" disabled={pending} onClick={()=>setSignup(!signup)}>{signup?'Already have an account? Sign in':'New here? Create an account'}</button><p className="account-help">Account trouble? <a href="https://amonaconsulting.com/contact/">Contact Amona</a></p></section></main>
+}
+

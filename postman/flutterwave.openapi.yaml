@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Flutterwave course checkout subset
+  version: 1.0.0
+  description: Local subset of Flutterwave v3 Standard and verification documentation; not a vendor-owned specification.
+servers:
+  - url: https://api.flutterwave.com/v3
+paths:
+  /payments:
+    post:
+      summary: Create hosted checkout
+      responses:
+        '200':
+          description: Hosted link
+          content:
+            application/json:
+              example:
+                status: success
+                data:
+                  link: https://checkout.flutterwave.com/v3/hosted/pay/test
+  /transactions/verify_by_reference:
+    get:
+      summary: Verify payment by merchant reference
+      parameters:
+        - in: query
+          name: tx_ref
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transaction found; inspect data.status before granting access
+          content:
+            application/json:
+              example:
+                status: success
+                data:
+                  id: 3091255
+                  tx_ref: example-reference
+                  amount: 30000
+                  currency: NGN
+                  status: successful
+                  customer:
+                    email: simulation@example.test
+        '400':
+          description: Transaction not found
