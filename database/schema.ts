@@ -1,0 +1,15 @@
+export const schema = `CREATE SCHEMA IF NOT EXISTS solo2ceo;
+SET LOCAL search_path TO solo2ceo;
+
+ CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,name TEXT NOT NULL,email TEXT NOT NULL UNIQUE,password TEXT NOT NULL,created_at BIGINT NOT NULL);
+ CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,expires_at BIGINT NOT NULL);
+ CREATE TABLE IF NOT EXISTS lessons(user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,lesson_id TEXT NOT NULL,completed INTEGER NOT NULL DEFAULT 0,bookmarked INTEGER NOT NULL DEFAULT 0,note TEXT NOT NULL DEFAULT '',PRIMARY KEY(user_id,lesson_id));
+ CREATE TABLE IF NOT EXISTS learning(user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,last_lesson TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS attempts(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,module INTEGER NOT NULL,score INTEGER NOT NULL,answers TEXT NOT NULL,created_at BIGINT NOT NULL,sequence BIGSERIAL UNIQUE);
+ CREATE INDEX IF NOT EXISTS attempts_student ON attempts(user_id,module,created_at);
+ CREATE TABLE IF NOT EXISTS limits(key TEXT PRIMARY KEY,count INTEGER NOT NULL,expires_at BIGINT NOT NULL);
+ CREATE TABLE IF NOT EXISTS payments(reference TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,mode TEXT NOT NULL,amount INTEGER NOT NULL,currency TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending',checkout_url TEXT,transaction_id TEXT,created_at BIGINT NOT NULL,verified_at BIGINT,UNIQUE(mode,transaction_id));
+ CREATE INDEX IF NOT EXISTS payments_student ON payments(user_id,mode,created_at);
+ CREATE TABLE IF NOT EXISTS enrollments(user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,mode TEXT NOT NULL,starts_at BIGINT NOT NULL,expires_at BIGINT NOT NULL,PRIMARY KEY(user_id,mode));
+ 
+`;

@@ -1,3 +1,4 @@
+import { transaction } from './database.ts';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { db, type Student } from './backend.ts';
 
@@ -23,20 +24,20 @@ export function appOrigin(){
  if(paymentMode()==='live'&&(url.protocol!=='https:'||!process.env.FLUTTERWAVE_WEBHOOK_SECRET))throw new Error('Live checkout requires HTTPS and payment notifications.');
  return url.origin;
 }
-export function enrollment(userId:string):Enrollment|undefined {
- return db().prepare('SELECT starts_at,expires_at FROM enrollments WHERE user_id=? AND mode=?').get(userId,paymentMode()) as Enrollment|undefined;
+export async function enrollment(userId:string):Promise<Enrollment|undefined> {
+ return (await db().prepare('SELECT starts_at,expires_at FROM enrollments WHERE user_id=? AND mode=?').get(userId,paymentMode())) as Enrollment|undefined;
 }
-export function requireEnrollment(userId:string){
- const access=enrollment(userId);
+export async function requireEnrollment(userId:string){
+ const access=(await enrollment(userId));
  if(!access||access.expires_at<=Date.now())throw new Error('Course access is inactive. Visit the enrollment page to unlock three months of learning.');
  return access;
 }
-export function studentPayments(userId:string){
- return db().prepare('SELECT * FROM payments WHERE user_id=? AND mode=? ORDER BY created_at DESC LIMIT 10').all(userId,paymentMode()) as Payment[];
+export async function studentPayments(userId:string){
+ return (await db().prepare('SELECT * FROM payments WHERE user_id=? AND mode=? ORDER BY created_at DESC LIMIT 10').all(userId,paymentMode())) as Payment[];
 }
-export function findPayment(reference:string){
+export async function findPayment(reference:string){
  if(typeof reference!=='string'||reference.length>100)return undefined;
- return db().prepare('SELECT * FROM payments WHERE reference=? AND mode=?').get(reference,paymentMode()) as Payment|undefined;
+ return (await db().prepare('SELECT * FROM payments WHERE reference=? AND mode=?').get(reference,paymentMode())) as Payment|undefined;
 }
 export function addThreeMonths(timestamp:number){
  const date=new Date(timestamp),day=date.getUTCDate();
@@ -58,51 +59,50 @@ async function flutterwave(path:string,body?:object){
 }
 export async function startCheckout(student:Student){
  secretKey();const origin=appOrigin();
- if((enrollment(student.id)?.expires_at||0)>Date.now())throw new Error('Your course access is already active.');
+ if(((await enrollment(student.id))?.expires_at||0)>Date.now())throw new Error('Your course access is already active.');
  const database=db(),now=Date.now();let payment:Payment;
- database.exec('BEGIN IMMEDIATE');
- try{
-  payment=database.prepare("SELECT * FROM payments WHERE user_id=? AND mode=? AND status='pending' AND created_at>? ORDER BY created_at DESC LIMIT 1").get(student.id,paymentMode(),now-30*60000) as Payment;
+ await transaction(async()=>{
+  await database.prepare('SELECT id FROM users WHERE id=? FOR UPDATE').get(student.id);
+  payment=(await database.prepare("SELECT * FROM payments WHERE user_id=? AND mode=? AND status='pending' AND created_at>? ORDER BY created_at DESC LIMIT 1").get(student.id,paymentMode(),now-30*60000)) as Payment;
   if(!payment){
    const reference='s2c-'+randomUUID();
-   database.prepare('INSERT INTO payments(reference,user_id,mode,amount,currency,created_at) VALUES(?,?,?,?,?,?)').run(reference,student.id,paymentMode(),COURSE_PRICE,COURSE_CURRENCY,now);
-   payment=findPayment(reference)!;
+   (await database.prepare('INSERT INTO payments(reference,user_id,mode,amount,currency,created_at) VALUES(?,?,?,?,?,?)').run(reference,student.id,paymentMode(),COURSE_PRICE,COURSE_CURRENCY,now));
+   payment=(await findPayment(reference))!;
   }
-  database.exec('COMMIT');
- }catch(e){database.exec('ROLLBACK');throw e;}
+ });
  if(payment.checkout_url)return payment.checkout_url;
  const data=await flutterwave('/payments',{tx_ref:payment.reference,amount:payment.amount,currency:payment.currency,redirect_url:origin+'/payments/return',customer:{email:student.email,name:student.name},customizations:{title:'Solo2CEO Masterclass',description:'Three months of course access'},configurations:{session_duration:30,max_retry_attempt:5}});
  const link=new URL(data.link);
  if(link.protocol!=='https:'||link.hostname!=='checkout.flutterwave.com'||link.username||link.password)throw new Error('Flutterwave returned an invalid checkout address.');
- database.prepare('UPDATE payments SET checkout_url=? WHERE reference=?').run(link.href,payment.reference);
+ (await database.prepare('UPDATE payments SET checkout_url=? WHERE reference=?').run(link.href,payment.reference));
  return link.href;
 }
 // Called only with data returned by the authenticated Flutterwave verification API.
-export function applyVerifiedPayment(reference:string,data:unknown,now=Date.now()){
- const payment=findPayment(reference);if(!payment)throw new Error('Payment not found.');
+export async function applyVerifiedPayment(reference:string,data:unknown,now=Date.now()){
+ const payment=(await findPayment(reference));if(!payment)throw new Error('Payment not found.');
  const tx=data as {id?:number;tx_ref?:string;amount?:number|string;currency?:string;status?:string;customer?:{email?:string}};
- const owner=db().prepare('SELECT email FROM users WHERE id=?').get(payment.user_id) as {email:string};
+ const owner=(await db().prepare('SELECT email FROM users WHERE id=?').get(payment.user_id)) as {email:string};
  if(!tx||tx.tx_ref!==reference||tx.currency!==payment.currency||Number(tx.amount)!==payment.amount||typeof tx.id!=='number'||!Number.isSafeInteger(tx.id)||tx.id<=0||tx.customer?.email?.toLowerCase()!==owner.email)throw new Error('Payment details do not match this enrollment. Please contact Amona.');
  if(tx.status!=='successful')return false;
- const database=db();database.exec('BEGIN IMMEDIATE');
- try{
-  const current=findPayment(reference)!;
+ const database=db();return transaction(async()=>{
+  await database.prepare('SELECT id FROM users WHERE id=? FOR UPDATE').get(payment.user_id);
+  const current=(await findPayment(reference))!;
   if(current.status==='paid'){
    if(current.transaction_id!==String(tx.id))throw new Error('This purchase already has a different payment. Please contact Amona.');
-   database.exec('COMMIT');return true;
+   return true;
   }
-  const previous=enrollment(payment.user_id),starts=previous&&previous.expires_at>now?previous.expires_at:now;
-  database.prepare("UPDATE payments SET status='paid',transaction_id=?,verified_at=? WHERE reference=?").run(String(tx.id),now,reference);
-  database.prepare('INSERT INTO enrollments VALUES(?,?,?,?) ON CONFLICT(user_id,mode) DO UPDATE SET starts_at=excluded.starts_at,expires_at=excluded.expires_at').run(payment.user_id,payment.mode,previous&&previous.expires_at>now?previous.starts_at:now,addThreeMonths(starts));
-  database.exec('COMMIT');return true;
- }catch(e){database.exec('ROLLBACK');throw e;}
+  const previous=(await enrollment(payment.user_id)),starts=previous&&previous.expires_at>now?previous.expires_at:now;
+  (await database.prepare("UPDATE payments SET status='paid',transaction_id=?,verified_at=? WHERE reference=?").run(String(tx.id),now,reference));
+  (await database.prepare('INSERT INTO enrollments VALUES(?,?,?,?) ON CONFLICT(user_id,mode) DO UPDATE SET starts_at=excluded.starts_at,expires_at=excluded.expires_at').run(payment.user_id,payment.mode,previous&&previous.expires_at>now?previous.starts_at:now,addThreeMonths(starts)));
+  return true;
+ });
 }
 export async function verifyPayment(reference:string,userId?:string){
- const payment=findPayment(reference);
+ const payment=(await findPayment(reference));
  if(!payment||(userId&&payment.user_id!==userId))throw new Error('Payment not found for this account.');
  if(payment.status==='paid')return true;
  const data=await flutterwave('/transactions/verify_by_reference?tx_ref='+encodeURIComponent(reference));
- return applyVerifiedPayment(reference,data);
+ return (await applyVerifiedPayment(reference,data));
 }
 export function authenticWebhook(header:string|null){
  const secret=process.env.FLUTTERWAVE_WEBHOOK_SECRET;
@@ -118,7 +118,7 @@ export async function handleWebhook(request:Request){
  if(event.event!=='charge.completed'||event.data?.status!=='successful')return new Response('Ignored');
  const reference=event.data?.tx_ref;
  if(typeof reference!=='string')return new Response('Invalid reference',{status:400});
- if(!findPayment(reference))return new Response('Ignored');
+ if(!(await findPayment(reference)))return new Response('Ignored');
  try{await verifyPayment(reference);return new Response('OK');}
  catch{return new Response('Verification pending',{status:503});}
 }

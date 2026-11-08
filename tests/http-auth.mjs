@@ -1,7 +1,7 @@
 // Run against the local development server; removes only its own generated account.
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
-import { DatabaseSync } from 'node:sqlite';
+import { db } from '../lib/database.ts';
 import { readFileSync } from 'node:fs';
 import course from '../course-data.json' with {type:'json'};
 import assessments from '../assessment-data.json' with {type:'json'};
@@ -22,9 +22,9 @@ try{
  const headers={cookie:cookie.split(';')[0]};
  const locked=await fetch(base,{headers,redirect:'manual'});assert.equal(locked.headers.get('location'),'/enroll');
  const enrollmentHtml=await (await fetch(base+'/enroll',{headers})).text();assert.ok(enrollmentHtml.includes('30,000'));assert.ok(!enrollmentHtml.includes(course.groups[0].lessons[0].id));
- const fixtureDb=new DatabaseSync(process.env.DATABASE_PATH||'data/solo2ceo.sqlite');
- const fixtureUser=fixtureDb.prepare('SELECT id FROM users WHERE email=?').get(email);
- fixtureDb.prepare('INSERT INTO enrollments VALUES(?,?,?,?)').run(fixtureUser.id,'test',Date.now(),Date.now()+86400000);fixtureDb.close();
+ const fixtureDb=db();
+ const fixtureUser=await fixtureDb.prepare('SELECT id FROM users WHERE email=?').get(email);
+ await fixtureDb.prepare('INSERT INTO enrollments VALUES(?,?,?,?)').run(fixtureUser.id,'test',Date.now(),Date.now()+86400000);
  const page=await fetch(base,{headers});assert.equal(page.status,200);const html=await page.text();assert.ok(html.includes('Backend test student'));assert.ok(html.includes('Your next chapter starts here.'));
  const signin=await account('login');assert.equal(signin.status,303);assert.ok(signin.headers.get('set-cookie'));
  const manifest=JSON.parse(readFileSync('.next/dev/server/server-reference-manifest.json','utf8')).node;
@@ -38,7 +38,7 @@ try{
  const grading=await action('submitAssessment',[1,assessments[0].map(q=>q.answer)]);assert.ok((await grading.text()).includes('"score":100'));
  const forged=await action('saveLearning',[[{lesson,score:999}]]);assert.ok((await forged.text()).includes('"ok":false'));
  const csrf=await action('saveLearning',[[{lesson,completed:false}]],headers.cookie,'https://untrusted.example');assert.ok(csrf.status>=400);
- const expiryDb=new DatabaseSync(process.env.DATABASE_PATH||'data/solo2ceo.sqlite');expiryDb.prepare('UPDATE enrollments SET expires_at=0 WHERE user_id=?').run(fixtureUser.id);expiryDb.close();
+ const expiryDb=db();await expiryDb.prepare('UPDATE enrollments SET expires_at=0 WHERE user_id=?').run(fixtureUser.id);
  assert.equal((await fetch(base,{headers,redirect:'manual'})).headers.get('location'),'/enroll');
  assert.ok((await (await action('saveLearning',[[{lesson,completed:false}]])).text()).includes('\"ok\":false'));
  assert.ok((await (await action('submitAssessment',[1,assessments[0].map(q=>q.answer)])).text()).includes('\"ok\":false'));
@@ -46,5 +46,5 @@ try{
  const invalid=await fetch(base,{headers:{cookie:'solo2ceo-session='+'a'.repeat(64)},redirect:'manual'});assert.equal(invalid.status,307);
  console.log('PASS: signup/login, cookie flags, unpaid/expired enrollment gates, authenticated course, learning writes across sessions, unauthorized writes rejected, server grading, forged scores rejected, cross-origin rejection, logout revocation.');
 }finally{
- const database=new DatabaseSync(process.env.DATABASE_PATH||'data/solo2ceo.sqlite');database.exec('PRAGMA foreign_keys=ON');database.prepare('DELETE FROM users WHERE email=?').run(email);database.close();
+ const database=db();await database.prepare('DELETE FROM users WHERE email=?').run(email);await database.close();
 }

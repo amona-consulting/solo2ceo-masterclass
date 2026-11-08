@@ -7,7 +7,7 @@ export async function GET(request:Request){
  if(!student)return Response.redirect(origin+'/login',303);
  const reference=new URL(request.url).searchParams.get('tx_ref');
  let confirmed=false;
- try{rateLimit('payment-check:'+student.id,30);if(reference)confirmed=await verifyPayment(reference,student.id);}catch{}
+ try{(await rateLimit('payment-check:'+student.id,30));if(reference)confirmed=await verifyPayment(reference,student.id);}catch{}
  // Browser status and transaction_id are deliberately not trusted.
  return Response.redirect(origin+(confirmed?'/':'/enroll?payment=pending'),303);
 }
