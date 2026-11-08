@@ -1,4 +1,5 @@
 import { transaction } from './database.ts';
+import { checkoutUrl } from './checkout-url.ts';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { db, type Student } from './backend.ts';
 
@@ -70,12 +71,11 @@ export async function startCheckout(student:Student){
    payment=(await findPayment(reference))!;
   }
  });
- if(payment.checkout_url)return payment.checkout_url;
+ if(payment.checkout_url)return checkoutUrl(payment.checkout_url,paymentMode());
  const data=await flutterwave('/payments',{tx_ref:payment.reference,amount:payment.amount,currency:payment.currency,redirect_url:origin+'/payments/return',customer:{email:student.email,name:student.name},customizations:{title:'Solo2CEO Masterclass',description:'Three months of course access'},configurations:{session_duration:30,max_retry_attempt:5}});
- const link=new URL(data.link);
- if(link.protocol!=='https:'||link.hostname!=='checkout.flutterwave.com'||link.username||link.password)throw new Error('Flutterwave returned an invalid checkout address.');
- (await database.prepare('UPDATE payments SET checkout_url=? WHERE reference=?').run(link.href,payment.reference));
- return link.href;
+ const link=checkoutUrl(data.link,paymentMode());
+ (await database.prepare('UPDATE payments SET checkout_url=? WHERE reference=?').run(link,payment.reference));
+ return link;
 }
 // Called only with data returned by the authenticated Flutterwave verification API.
 export async function applyVerifiedPayment(reference:string,data:unknown,now=Date.now()){
