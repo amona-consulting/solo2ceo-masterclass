@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/backend.test.ts tests/payments.test.ts tests/checkout-url.test.ts"
+    "test": "node --experimental-strip-types --test tests/backend.test.ts tests/payments.test.ts tests/checkout-url.test.ts tests/flutterwave-client.test.ts"
   },
   "keywords": [],
   "author": "",

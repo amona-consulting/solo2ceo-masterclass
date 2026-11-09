@@ -1,3 +1,4 @@
+import { requestFlutterwave } from './flutterwave-client.ts';
 import { transaction } from './database.ts';
 import { checkoutUrl } from './checkout-url.ts';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
@@ -50,13 +51,7 @@ async function flutterwave(path:string,body?:object){
  const key=secretKey();
  // A local HTTP stand-in is permitted only in the isolated automated test process.
  const base=process.env.NODE_ENV==='test'&&process.env.PAYMENT_TEST_API_URL?process.env.PAYMENT_TEST_API_URL:'https://api.flutterwave.com/v3';
- try{
-  const response=await fetch(base+path,{method:body?'POST':'GET',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store',signal:AbortSignal.timeout(12000)});
-  if(!response.ok)throw new Error('Provider unavailable');
-  const result=await response.json();
-  if(result?.status!=='success'||!result.data)throw new Error('Provider unavailable');
-  return result.data;
- }catch{throw new Error('We could not confirm with Flutterwave. If you have paid, check payment status before trying to pay again.');}
+ return requestFlutterwave(base,path,key,body);
 }
 export async function startCheckout(student:Student){
  secretKey();const origin=appOrigin();
