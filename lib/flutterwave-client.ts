@@ -14,7 +14,7 @@ export async function requestFlutterwave(base:string,path:string,key:string,body
  const operation=body?'checkout':'verification';
  let kind='network',httpStatus:number|undefined;
  try{
-  const response=await fetch(base+path,{method:body?'POST':'GET',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store',signal:AbortSignal.timeout(12000)});
+  const response=await fetch(base+path,{method:body?'POST':'GET',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store',signal:AbortSignal.timeout(45000)});
   httpStatus=response.status;
   const contentType=response.headers.get('content-type')||'';
   let result:any;

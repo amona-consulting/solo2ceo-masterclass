@@ -2,6 +2,7 @@ import { currentStudent } from '../../../lib/session';
 import { appOrigin, verifyPayment } from '../../../lib/payments';
 import { rateLimit } from '../../../lib/backend';
 export const runtime='nodejs';
+export const maxDuration=60;
 export async function GET(request:Request){
  const origin=appOrigin(),student=await currentStudent();
  if(!student)return Response.redirect(origin+'/login',303);

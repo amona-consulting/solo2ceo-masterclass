@@ -5,6 +5,7 @@ import { signOut } from '../actions';
 import AmonaLogo from '../amona-logo';
 import { CheckoutForm, PaymentCheck } from './payment-form';
 export const runtime='nodejs';
+export const maxDuration=60;
 export default async function Enroll({searchParams}:{searchParams:Promise<{payment?:string}>}){
  const student=await currentStudent();if(!student)redirect('/login');
  const access=(await enrollment(student.id));if(access&&access.expires_at>Date.now())redirect('/');
