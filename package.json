@@ -18,7 +18,7 @@
     "@phosphor-icons/react": "^2.1.10",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
-    "next": "^16.4.3",
+    "next": "^16.4.6",
     "pg": "^8.23.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
