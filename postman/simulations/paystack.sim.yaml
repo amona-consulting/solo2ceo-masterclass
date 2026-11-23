@@ -1,0 +1,9 @@
+simulation: paystack
+routing: path
+mocks:
+  - name: paystack
+    routeKey: paystack
+    origin:
+      - api.paystack.co
+    interceptRequests: true
+    path: postman/mocks/paystack

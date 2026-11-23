@@ -10,6 +10,8 @@ SET LOCAL search_path TO solo2ceo;
  CREATE TABLE IF NOT EXISTS limits(key TEXT PRIMARY KEY,count INTEGER NOT NULL,expires_at BIGINT NOT NULL);
  CREATE TABLE IF NOT EXISTS payments(reference TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,mode TEXT NOT NULL,amount INTEGER NOT NULL,currency TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending',checkout_url TEXT,transaction_id TEXT,created_at BIGINT NOT NULL,verified_at BIGINT,UNIQUE(mode,transaction_id));
  CREATE INDEX IF NOT EXISTS payments_student ON payments(user_id,mode,created_at);
+ CREATE TABLE IF NOT EXISTS paystack_payments(reference TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,mode TEXT NOT NULL,amount INTEGER NOT NULL,currency TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending',checkout_url TEXT,transaction_id TEXT,created_at BIGINT NOT NULL,verified_at BIGINT,UNIQUE(mode,transaction_id));
+ CREATE INDEX IF NOT EXISTS paystack_payments_student ON paystack_payments(user_id,mode,created_at);
  CREATE TABLE IF NOT EXISTS enrollments(user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,mode TEXT NOT NULL,starts_at BIGINT NOT NULL,expires_at BIGINT NOT NULL,PRIMARY KEY(user_id,mode));
  
 `;

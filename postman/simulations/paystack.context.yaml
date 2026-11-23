@@ -1,0 +1,18 @@
+purpose:
+  stands_in_for: Paystack transaction initialization and verification
+  unblocks: Payment integration checks without real charges
+assumptions:
+  - id: payment-contract
+    status: supported
+    claim: The adapter creates an NGN checkout in kobo and verifies the stored reference before granting access.
+    reason: Official transaction documentation and a local HTTP simulation support these request and response shapes.
+    verification: On 2026-11-23 tests passed pending, wrong amount, provider outage, successful verification and duplicate webhook cases; simulation logs confirm actual HTTP requests.
+    source: https://paystack.com/docs/api/transaction/ ; tests/paystack.test.ts
+    updated_at: '2026-11-23'
+  - id: real-provider-access
+    status: unknown
+    claim: The deployed account credentials can initialize checkout and receive signed notifications.
+    reason: Credentials are held in Vercel and the separate webhook still needs dashboard configuration.
+    verification: Local simulation only. Complete a Paystack test payment and inspect delivery after deployment. Owner mock discovery was skipped because Postman is signed out; Orbit returned unrelated providers, so the mock uses official documentation.
+    source: https://paystack.com/docs/v2/developer-tools/integration/webhooks ; PAYMENTS.md
+    updated_at: '2026-11-23'

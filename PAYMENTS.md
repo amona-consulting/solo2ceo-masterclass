@@ -1,5 +1,23 @@
 # Course payments
 
+## Current checkout: Paystack (23 November 2026)
+
+New enrollment purchases use Paystack hosted checkout. The sections below this new section describe the retained Flutterwave integration and its historical checks, not the active Pay button.
+
+Set private Vercel variables `PAYSTACK_SECRET_KEY` (test restricted key with transactions:write), `PAYSTACK_WEBHOOK_SECRET` (whole test signing secret, including whsec_), `PAYMENTS_MODE=test`, and `APP_URL` to the deployed site's HTTPS origin. Redeploy after changes. Never put secrets in NEXT_PUBLIC_ variables. The public key is not needed for this server-created redirect flow.
+
+Add a separate test-mode Paystack webhook for `charge.success` at `https://YOUR-DOMAIN/api/payments/paystack/webhook`. Preserve other apps' endpoints and legacy keys. Use an existing signing secret without rotation, or generate one if absent; Paystack documents that legacy signatures continue while the legacy secret key exists. The new handler verifies `Paystack-Signature` over raw bytes with HMAC-SHA512 and a 300-second timestamp tolerance. It does not use the restricted API key to verify signatures.
+
+The callback is `/payments/paystack/return` and is passed per transaction, so no account-wide callback change is needed. A callback never grants access based on browser status. The server verifies reference, successful status, NGN currency, exact 3,000,000-kobo amount and test/live domain. The authenticated student owns the locally recorded purchase. Duplicate transaction IDs and concurrent notifications cannot grant duplicate access. Unknown references (including other applications' payments) are ignored. Provider failures return a retryable webhook response and leave access locked. Verification has a 15-second provider timeout; durable enrollment writes finish before webhook acknowledgment because this app has no durable background queue.
+
+An additive `paystack_payments` table separates new purchases from the unchanged Flutterwave `payments` table. Accounts, progress and the shared enrollment table remain intact. Existing Flutterwave callback/webhook routes remain available for previously initiated payments. New checkout reuses pending Paystack links for 30 minutes. Orders persist before provider calls so ambiguous failures can be checked by reference; if initialization is accepted but its response is lost, check payment status before starting another attempt.
+
+Validation: `npm test` includes Paystack security and enrollment tests. Run `postman simulation run postman/simulations/paystack.sim.yaml --port 4016 --output ndjson --no-history`, then set `PAYSTACK_TEST_API_URL=http://127.0.0.1:4016/paystack` for the test command to include HTTP integration scenarios. This override only applies under NODE_ENV=test; the test fixture supplies an isolated embedded database and dummy keys. Local tests do not prove Vercel credentials or actual Paystack delivery. Before live activation, complete a sandbox checkout and confirm return, webhook, and one-time access grant. Then use matching live API/signing credentials and live webhook settings. Refund/dispute automation remains unimplemented.
+
+Sources: https://paystack.com/docs/api/transaction/ ; https://paystack.com/docs/v2/api/authentication ; https://paystack.com/docs/v2/developer-tools/integration/webhooks
+
+## Historical Flutterwave configuration
+
 One purchase costs NGN 30,000 and grants three calendar months from the first successful server verification. Month ends are clamped (31 January becomes 30 April). Access expires automatically; progress remains. No automatic renewal. No existing account is granted enrollment automatically.
 
 ## Local configuration

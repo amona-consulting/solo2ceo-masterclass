@@ -3,7 +3,7 @@ import { useActionState } from 'react';
 import { checkout, checkPayment } from './actions';
 export function CheckoutForm(){
  const [state,action,pending]=useActionState(checkout,{error:''});
- return <form action={action}>{state.error&&<p role="alert" className="account-error">{state.error}</p>}<button className="button green" disabled={pending}>{pending?'Opening checkout…':'Pay ₦30,000 with Flutterwave'}</button></form>;
+ return <form action={action}>{state.error&&<p role="alert" className="account-error">{state.error}</p>}<button className="button green" disabled={pending}>{pending?'Opening checkout…':'Pay ₦30,000 with Paystack'}</button></form>;
 }
 export function PaymentCheck({reference}:{reference:string}){
  const [state,action,pending]=useActionState(checkPayment,{error:''});

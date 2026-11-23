@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation';
 import { requireStudent } from '../../lib/session';
 import { rateLimit } from '../../lib/backend';
-import { startCheckout, verifyPayment } from '../../lib/payments';
+import { startPaystackCheckout as startCheckout, verifyPaystackPayment as verifyPayment } from '../../lib/paystack';
 export async function checkout(_previous:{error:string}){
  let link:string;
  try{const student=await requireStudent();(await rateLimit('checkout:'+student.id,10));link=await startCheckout(student);}
