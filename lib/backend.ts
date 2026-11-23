@@ -48,6 +48,27 @@ export async function sessionStudent(token:string|undefined):Promise<Student|nul
  return row?{id:row.id,name:row.name,email:row.email}:null;
 }
 export async function revokeSession(token:string){(await db().prepare('DELETE FROM sessions WHERE token_hash=?').run(digest(token)))}
+export async function updateProfile(userId:string,name:unknown){
+ if(typeof name!=='string'||name.trim().length<2||name.length>100)throw new Error('Enter your name (2–100 characters).');
+ await db().prepare('UPDATE users SET name=? WHERE id=?').run(name.trim(),userId);
+ return name.trim();
+}
+export async function changePassword(userId:string,current:unknown,password:unknown,confirmation:unknown,token:string){
+ if(typeof current!=='string'||current.length>128)throw new Error('Enter your current password.');
+ if(typeof password!=='string'||password.length<12||password.length>128)throw new Error('Use a password between 12 and 128 characters.');
+ if(password!==confirmation)throw new Error('New passwords do not match.');
+ if(password===current)throw new Error('Choose a different password from your current one.');
+ await rateLimit('password:'+userId,10);
+ await transaction(async()=>{
+  const row=await db().prepare('SELECT password FROM users WHERE id=? FOR UPDATE').get(userId);
+  if(!row)throw new Error('Your account could not be found.');
+  const [salt,hash]=String(row.password).split(':');
+  if(!timingSafeEqual(await derive(current,salt),Buffer.from(hash,'hex')))throw new Error('Current password is incorrect.');
+  const nextSalt=randomBytes(16).toString('hex'),nextHash=(await derive(password,nextSalt)).toString('hex');
+  await db().prepare('UPDATE users SET password=? WHERE id=?').run(`${nextSalt}:${nextHash}`,userId);
+  await db().prepare('DELETE FROM sessions WHERE user_id=? AND token_hash<>?').run(userId,digest(token));
+ });
+}
 export async function readLearning(userId:string):Promise<Learning>{
  const rows=(await db().prepare('SELECT * FROM lessons WHERE user_id=?').all(userId)) as {lesson_id:string;completed:number;bookmarked:number;note:string}[];
  const last=(await db().prepare('SELECT last_lesson FROM learning WHERE user_id=?').get(userId)) as {last_lesson:string}|undefined;

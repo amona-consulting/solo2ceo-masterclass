@@ -4,8 +4,24 @@ import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import course from '../course-data.json' with { type:'json' };
 import assessments from '../assessment-data.json' with { type:'json' };
-import { db, register, authenticate, createSession, sessionStudent, revokeSession, readLearning, writeLearning, gradeAssessment, rateLimit } from '../lib/backend.ts';
+import { db, register, authenticate, createSession, sessionStudent, revokeSession, readLearning, writeLearning, gradeAssessment, rateLimit, updateProfile, changePassword } from '../lib/backend.ts';
 after(async()=>{await db().close();});
+test('profile updates persist and password changes verify credentials and revoke other sessions',async()=>{
+ const user=await register('Profile Student','profile@example.test','Original password 123!');
+ const current=await createSession(user.id),other=await createSession(user.id);
+ await updateProfile(user.id,'  Updated Student  ');
+ assert.equal((await sessionStudent(current.token))?.name,'Updated Student');
+ await assert.rejects(updateProfile(user.id,' '));
+ await assert.rejects(changePassword(user.id,'Wrong password','Replacement password 123!','Replacement password 123!',current.token),/incorrect/);
+ await assert.rejects(changePassword(user.id,'Original password 123!','short','short',current.token),/12 and 128/);
+ await assert.rejects(changePassword(user.id,'Original password 123!','Replacement password 123!','Mismatch',current.token),/match/);
+ assert.ok(await sessionStudent(other.token));
+ await changePassword(user.id,'Original password 123!','Replacement password 123!','Replacement password 123!',current.token);
+ assert.equal(await sessionStudent(other.token),null);
+ assert.equal((await sessionStudent(current.token))?.id,user.id);
+ await assert.rejects(authenticate(user.email,'Original password 123!'));
+ assert.equal((await authenticate(user.email,'Replacement password 123!')).id,user.id);
+});
 test('account, persistence, isolation and grading lifecycle',async()=>{
  const alice=await register('Test Student A','Test-A@example.test','Long test password A!');
  const bob=await register('Test Student B','test-b@example.test','Long test password B!');
